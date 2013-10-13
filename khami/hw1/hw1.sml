@@ -2,28 +2,10 @@ fun is_older(a: int*int*int, b: int*int*int)=
   (#1 a - #1 b) * 100 + (#2 a - #2 b) * 10 + (#3 a - #3 b) * 1 < 0
 
 
-(* 31: 1, 3, 5, 7, 8, 10, 12
-30: 4, 6, 9, 11
-28: 2 *)
-fun days_in_month(month: int) =
-  let 
-    fun list_in(y: int, xs: int list) =
-      not (null xs) andalso (y = hd xs  orelse list_in(y, tl xs))
-  in
-    if list_in(month, [1, 3, 5, 7, 8, 10, 12])
-    then 31
-    else if list_in(month, [4, 6, 9, 11])
-      then 30
-      else 28
-  end
-
-fun is_date_in_month(date: (int*int*int), number: int) =
-    number = #2 date andalso #3 date <= days_in_month(#2 date)
-
 fun number_in_month(dates: (int*int*int) list, number: int) =
   let
     fun check(date: int*int*int) = 
-      if is_date_in_month(date, number)
+      if #2 date = number
       then 1
       else 0
   in
@@ -44,7 +26,7 @@ fun dates_in_month(dates: (int*int*int) list, number: int) =
       val other = dates_in_month(tl dates, number)
       val date = hd dates
     in
-      if is_date_in_month(date, number)
+      if #2 date = number
       then date :: other
       else other
     end
@@ -61,7 +43,7 @@ fun get_nth(xs: string list, num: int) =
 
 fun date_to_string(date: int*int*int) = 
   let
-    val names = ["January", "February", "March'",
+    val names = ["January", "February", "March",
       "April", "May", "June",
       "July", "August", "September",
       "October", "November", "December"]
@@ -138,6 +120,24 @@ fun dates_in_months_challenge(dates: (int*int*int) list, numbers: int list) =
 fun is_leap(year: int) =
   year mod 400 = 0 orelse (year mod 4 = 0 andalso year mod 100 <> 0)
 
+(* 31: 1, 3, 5, 7, 8, 10, 12
+30: 4, 6, 9, 11
+28: 2 *)
+fun days_in_month(month: int) =
+  let 
+    fun list_in(y: int, xs: int list) =
+      not (null xs) andalso (y = hd xs  orelse list_in(y, tl xs))
+  in
+    if list_in(month, [1, 3, 5, 7, 8, 10, 12])
+    then 31
+    else if list_in(month, [4, 6, 9, 11])
+      then 30
+      else 28
+  end
+
+fun is_date_in_month(date: (int*int*int), number: int) =
+    number = #2 date andalso #3 date <= days_in_month(#2 date)
+
 fun reasonable_date(date: int*int*int) =
   let
     val year = #1 date;
@@ -150,6 +150,6 @@ fun reasonable_date(date: int*int*int) =
       then is_leap(year)
       else 0 < day andalso day <= days_in_month(day)
   in
-    check_day() andalso check_month() andalso check_day()
+    check_year() andalso check_month() andalso check_day()
   end;
 
