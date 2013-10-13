@@ -1,7 +1,9 @@
+(* 1 *)
 fun is_older(a: int*int*int, b: int*int*int)=
   (#1 a - #1 b) * 100 + (#2 a - #2 b) * 10 + (#3 a - #3 b) * 1 < 0
 
 
+(* 2 *)
 fun number_in_month(dates: (int*int*int) list, number: int) =
   let
     fun check(date: int*int*int) = 
@@ -14,11 +16,13 @@ fun number_in_month(dates: (int*int*int) list, number: int) =
       else check(hd dates) + number_in_month(tl dates, number)
   end
 
+(* 3 *)
 fun number_in_months(dates: (int*int*int) list, numbers: int list) =
   if null numbers
   then 0
   else number_in_month(dates, hd numbers) + number_in_months(dates, tl numbers)
 
+(* 4 *)
 fun dates_in_month(dates: (int*int*int) list, number: int) =
   if null dates
   then []
@@ -31,16 +35,19 @@ fun dates_in_month(dates: (int*int*int) list, number: int) =
       else other
     end
     
+(* 5 *)
 fun dates_in_months(dates: (int*int*int) list, numbers: int list) =
   if null numbers
   then []
   else dates_in_month(dates, hd numbers) @ dates_in_months(dates, tl numbers)
 
+(* 6 *)
 fun get_nth(xs: string list, num: int) =
   if num = 1
   then hd xs
   else get_nth(tl xs, num-1)
 
+(* 7 *)
 fun date_to_string(date: int*int*int) = 
   let
     val names = ["January", "February", "March",
@@ -52,6 +59,7 @@ fun date_to_string(date: int*int*int) =
     month_name ^ " " ^ Int.toString(#3 date) ^ ", " ^ Int.toString(#1 date)
   end
 
+(* 8 *)
 fun number_before_reaching_sum(sum: int, numbers: int list) = 
   let
     fun aux(sum: int, numbers: int list, count: int)=
@@ -69,7 +77,7 @@ fun number_before_reaching_sum(sum: int, numbers: int list) =
   end
 
 
-
+(* 9 *)
 fun what_month(num: int) =
   let
     val counts = [31, 28, 31, 30,
@@ -79,11 +87,13 @@ fun what_month(num: int) =
     1 + number_before_reaching_sum(num, counts)
   end
 
+(* 10 *)
 fun month_range(d1: int, d2: int) =
   if d1 > d2
   then []
   else what_month(d1) :: month_range(d1 + 1, d2)
 
+(* 11 *)
 fun oldest(dates: (int*int*int) list) =
   let 
     fun aux(d1: int*int*int, d2: (int*int*int) option) =
@@ -97,6 +107,7 @@ fun oldest(dates: (int*int*int) list) =
   end
 
 
+(* 12 *)
 fun remove_duplicates(numbers: int list)=
   let
     fun aux(xs: int list, y: int)=
@@ -117,6 +128,7 @@ fun number_in_months_challenge(dates: (int*int*int) list, numbers: int list) =
 fun dates_in_months_challenge(dates: (int*int*int) list, numbers: int list) =
   dates_in_months(dates, remove_duplicates(numbers))
 
+(* 13 *)
 fun is_leap(year: int) =
   year mod 400 = 0 orelse (year mod 4 = 0 andalso year mod 100 <> 0)
 
