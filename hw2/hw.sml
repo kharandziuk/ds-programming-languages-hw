@@ -23,8 +23,7 @@ fun all_except_option(opt, xs)=
   end
 
 fun all_except(opt, xs) =
-  case all_except_option(opt, xs) of
-    NONE => [] 
+  case all_except_option(opt, xs) of NONE => [] 
     | SOME ys => ys
 
 fun get_substitutions1([], _)=[]
@@ -94,7 +93,8 @@ fun remove_card(cs, c, error)=
 
 fun all_same_color cs =
   case cs of
-    _::[] => true
+    [] => true
+  | _::[] => true
   | x::(x'::xs') => card_color(x) = card_color(x') andalso
                       all_same_color(x'::xs')
 
@@ -127,19 +127,82 @@ fun officiate(cs, ms, goal)=
       if res > goal
       then res
       else
-      case cs of
-        [] => res
-      | c::cs' =>
-          case ms of
-            [] => res
-          | m::ms' =>
-              case m of 
-                Draw => aux(cs', ms', c::held)
-              | Discard card =>
-                  (case remove_card(card, cs', IllegalMove) of
-                    cs => aux(cs, ms', held))
+        case cs of
+          [] => res
+        | c::cs' =>
+            case ms of
+              [] => res
+            | m::ms' =>
+                case m of 
+                  Draw => aux(cs', ms', c::held)
+                | Discard card =>
+                    (case remove_card(cs', card, IllegalMove) of
+                      cs => aux(cs, ms', held))
       end
   in
-    aux(cs, ms, held)
+    aux(cs, ms, [])
   end
-                 
+
+
+(* creates list of all possible ace substitutions list with repeats
+  [(Clubs, Ace)]) -> [(Clubs, Ace)], [(Clubs, Num 1)]
+  [(Clubs, Num 2)]) = [[(Clubs, Num 2)]];
+*)
+fun substitutions(cs)=
+  let
+    fun substs([], _ , acc)= acc
+    | substs(s::ss, es, acc)= (* middle, starts, ends*)
+      let
+        fun aux(m)= (m::ss) @ es
+      in
+        case s of
+          (k, Ace) => (
+            let val pos = (k, Num 1)
+            in
+              substs(ss, s::es, [aux(s)]) @
+              substs(ss, pos::es, [aux(pos)]) 
+            end
+          )
+        | _ => substs(ss, s::es, [aux(s)])
+      end
+  in
+    substs(cs, [], [])
+  end
+
+fun score_challenge([], goal)=goal
+| score_challenge(cs, goal)=
+  let
+    fun aux([]) = []
+    | aux(x::xs') = score(x, goal) :: aux(xs')
+
+    fun min([], min) = min
+    | min(x::xs', m) = if x < m then min(xs', x) else min(xs', m)
+
+    val poss = substitutions(cs);
+    val m::scores = aux(poss)
+  in
+    min(scores, m)
+  end
+
+fun officiate_challenge(cs, ms, goal)=
+  let
+    fun aux(cs, ms, held)=
+      let val res = score_challenge(held, goal) in
+      if res > goal
+      then res
+      else
+        case cs of
+          [] => res
+        | c::cs' =>
+            case ms of
+              [] => res
+            | m::ms' =>
+                case m of 
+                  Draw => aux(cs', ms', c::held)
+                | Discard card =>
+                    (case remove_card(cs', card, IllegalMove) of
+                      cs => aux(cs, ms', held))
+      end
+  in
+    aux(cs, ms, [])
+  end

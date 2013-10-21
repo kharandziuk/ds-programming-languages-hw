@@ -90,12 +90,14 @@ val test8_2 = all_same_color([(Hearts, Ace), (Spades, Ace)]) = false
 val test8_3 = all_same_color([(Hearts, Ace)]) = true
 
 val test9_1 = sum_cards([(Clubs, Num 2),(Clubs, Num 2)]) = 4;
-val test9_2 = sum_cards([(Clubs, Num 2)]) = 2;
-val test9_3 = sum_cards([(Clubs, Num 2), (Spades, Ace)]) = 13;
+val test9_2 = sum_cards([]) = 0;
+val test9_3 = sum_cards([(Clubs, Num 2)]) = 2;
+val test9_4 = sum_cards([(Clubs, Num 2), (Spades, Ace)]) = 13;
 
 val test10_1 = score([(Hearts, Num 2),(Clubs, Num 4)],10) = 4;
 val test10_2 = score([(Hearts, Ace),(Clubs, Num 4)],10) = 15;
 val test10_3 = score([(Hearts, Ace),(Diamonds, Num 4)],10) = 7;
+val test10_4 = score([], 10);
 
 val test11_1 = officiate([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15) = 6;
 
@@ -105,10 +107,57 @@ val test11_2 = officiate(
   42
 ) = 3;
 
-val test13 = ((officiate([(Clubs,Jack),(Spades,Num(8))],
+val test11_3 = ((officiate([(Clubs,Jack),(Spades,Num(8))],
                          [Draw,Discard(Hearts,Jack)],
                          42);
                false) 
               handle IllegalMove => true);
-             
-             
+
+val test_subst_1 = 
+  substitutions([(Clubs, Ace)]) = [
+  [(Clubs, Ace)],
+  [(Clubs, Num 1)]
+];
+
+val test_subst_2 = 
+  substitutions([(Clubs, Num 2)]) = [
+  [(Clubs, Num 2)]
+];
+
+val test_subst_3 = 
+  substitutions([(Clubs, Num 2), (Clubs, Num 2)]) = [
+  [(Clubs, Num 2), (Clubs, Num 2)]
+];
+
+val test_subst_4 = 
+  substitutions([(Clubs, Num 2), (Clubs, Ace), (Clubs, Num 2)]) = [ 
+  [(Clubs, Num 2), (Clubs, Ace), (Clubs, Num 2)],
+  [(Clubs, Num 2), (Clubs, Num 1), (Clubs, Num 2)]
+];
+
+val test_subst_5 =
+  substitutions([(Clubs, Ace), (Hearts, Ace)]) = [
+  [(Hearts,Ace),(Clubs,Ace)],
+  [(Hearts,Num 1),(Clubs,Ace)],
+  [(Hearts,Ace),(Clubs,Num 1)],
+  [(Hearts,Num 1),(Clubs,Num 1)]
+];
+
+val testc1_1 = score_challenge([(Hearts, Num 2),(Clubs, Num 4)],10) = 4;
+val testc1_2 = score_challenge([(Hearts, Ace),(Clubs, Num 4)],10) = 5;
+val testc1_3 = score_challenge([(Hearts, Ace),(Diamonds, Num 4)],10) = 2;
+val testc1_4 = score_challenge([], 10) = 10;
+
+val testc2_1 = officiate_challenge([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15) = 6;
+
+val testc2_2 = officiate_challenge(
+  [(Clubs,Ace),(Spades,Ace),(Clubs,Ace),(Spades,Ace)],
+  [Draw,Draw,Draw,Draw,Draw],
+  42
+) = 3;
+
+val testc2_3 = ((officiate_challenge([(Clubs,Jack),(Spades,Num(8))],
+                         [Draw,Discard(Hearts,Jack)],
+                         42);
+               false) 
+              handle IllegalMove => true);
