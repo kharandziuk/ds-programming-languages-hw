@@ -136,7 +136,7 @@ fun officiate(cs, ms, goal)=
                 case m of 
                   Draw => aux(cs', ms', c::held)
                 | Discard card =>
-                    (case remove_card(cs', card, IllegalMove) of
+                    (case remove_card(cs, card, IllegalMove) of
                       cs => aux(cs, ms', held))
       end
   in
@@ -169,7 +169,7 @@ fun substitutions(cs)=
     substs(cs, [], [])
   end
 
-fun score_challenge([], goal)=goal
+fun score_challenge([], goal)=goal div 2
 | score_challenge(cs, goal)=
   let
     fun aux([]) = []
@@ -200,7 +200,7 @@ fun officiate_challenge(cs, ms, goal)=
                 case m of 
                   Draw => aux(cs', ms', c::held)
                 | Discard card =>
-                    (case remove_card(cs', card, IllegalMove) of
+                    (case remove_card(cs, card, IllegalMove) of
                       cs => aux(cs, ms', held))
       end
   in
