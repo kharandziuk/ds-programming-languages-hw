@@ -63,7 +63,21 @@ val test9c_1 = count_some_var ("x", Variable("x")) = 1;
 val test10_1 = check_pat (Variable("x")) = true;
 val test10_2 = check_pat (TupleP [Variable("x"), Variable("x")]) = false;
 
+val test11 = match (Const(1), Wildcard) = SOME [];
+val test11 = match (Const(1), Variable("t")) = SOME [("t", Const(1))];
 val test11 = match (Const(1), UnitP) = NONE;
+val test11 = match (Const(1), ConstP(1)) = SOME [];
+val test11 = match (Const(1), ConstP(2)) = NONE;
+val test11 = match (Unit, UnitP) = SOME [];
+val test11 = match (Unit, ConstP(2)) = NONE;
+val test11 = match (
+    Tuple([Const(1), Const(2)]),
+    TupleP([ConstP(1), ConstP(2)])
+) = SOME [];
+val test11 = match (
+    Tuple([Const(1), Const(2)]),
+    TupleP([VariableP("t"), VariableP("b")])
+) = SOME [("t", Const(1)), ("b", Const(2))];
 
 val test12 = first_match Unit [UnitP] = SOME []
 

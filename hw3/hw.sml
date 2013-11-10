@@ -73,15 +73,6 @@ datatype valu = Const of int
 	      | Tuple of valu list
 	      | Constructor of string * valu
 
-fun match (v, p) =
-  case v of
-    Const x => (case p of
-                 Wildcard => SOME []
-               | Variable s => SOME [(s,x)]
-               | TupleP (_::[]) =>  SOME []
-               | _ => NONE)
-  | _ => NONE
-
 
 fun g f1 f2 p =
     let 
@@ -104,6 +95,34 @@ fun count_some_var(name, pattern) =
 
 fun check_pat p =
   (g (fn () => 0) (fn x => if count_some_var(x, p) = 1 then 0 else 1) p) = 0
+
+fun match (value, pattern) =
+  let
+      fun match_const(const)=
+        case pattern of
+          Wildcard => SOME []
+        | Variable s => SOME [(s,value)]
+        | TupleP (_::[]) =>  SOME []
+        | ConstP t => if t = const
+                      then SOME []
+                      else NONE
+        | _ => NONE
+      fun match_unit()=
+        case pattern of
+          Wildcard => SOME []
+          UnitP => SOME []
+        | _ => NONE
+      fun match_tuple(value_list)=
+        case pattern of
+  in
+    case value of
+      Const x => match_const(x)
+    | Unit => match_unit()
+	| Tuple vl => match_tuple(vl)ListPair.zip(
+        ,
+        all_answers match vl
+    | _ => NONE
+  end
 
 (**** for the challenge problem only ****)
 
