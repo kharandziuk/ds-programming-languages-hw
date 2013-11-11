@@ -15,8 +15,8 @@
 ; problem 3
 (define (list-nth-mod xs n)
   (cond [(< n 0) (error "list-nth-mod: negative number")]
-        [(null? xs) (error "list-nth-mod: empty list")]
-        [#t (car (list-tail xs n))]))
+        [#t (let ([l (remainder n (length xs))])
+              (car (list-tail xs l)))]))
 
 ; problem 4
 (define (stream-for-n-steps stream n)
@@ -85,7 +85,7 @@
            [f-set (lambda (x)
                     (begin
                            (vector-set! memo pos x)
-                           (set! pos (if (= pos size) 0 (+ pos 1)))
+                           (set! pos (if (= pos (- size 1)) 0 (+ pos 1)))
                            x))]
            [aux (lambda (x)
                   (let ([ans (vector-assoc x memo)])

@@ -25,7 +25,7 @@
         "string-append-map test"]
     [test-case ""
       (check-exn exn:fail? (lambda () (list-nth-mod '(1) -2)))
-      (check-exn exn:fail? (lambda () (list-nth-mod '() 2)))
+      (check-equal? (list-nth-mod '(0) 5) 0)
       (check-equal? (list-nth-mod (list 0 1 2 3 4) 2) 2)
     ]
     [test-case ""
@@ -84,7 +84,7 @@
         (cons 4 1))
     ]
     [test-case ""
-      (let ([f (cached-assoc (list (cons 1 2) (cons 3 4)) 3)])
+      (let ([f (cached-assoc (list (cons 1 2) (cons 3 4)) 1)])
       (check-equal? 
         (f 3) 
         (cons 3 4))
