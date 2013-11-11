@@ -49,22 +49,63 @@
         (stream-for-n-steps dan-then-dog 3)
         (list "dan.jpg" "dog.jpg" "dan.jpg") "dan-then-dog test")
     ]
-;   
-;   ; stream-add-zero test
-;   (check-equal? (stream-for-n-steps (stream-add-zero ones) 1) (list (cons 0 1)) "stream-add-zero test")
-;   
-;   ; cycle-lists test
-;   (check-equal? (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3) (list (cons 1 "a") (cons 2 "b") (cons 3 "a")) 
-;                 "cycle-lists test")
-;   
-;   ; vector-assoc test
-;   (check-equal? (vector-assoc 4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1))) (cons 4 1) "vector-assoc test")
-;   
-;   ; cached-assoc tests
-;   (check-equal? ((cached-assoc (list (cons 1 2) (cons 3 4)) 3) 3) (cons 3 4) "cached-assoc test")
-;   
-;   ; while-less test
-;   (check-equal? (while-less 7 do (begin (set! a (+ a 1)) a)) #t "while-less test")
+    [test-case ""
+      (check-equal? 
+        (stream-for-n-steps (stream-add-zero ones) 1)
+        (list (cons 0 1)) "test")
+      (check-equal? 
+        (stream-for-n-steps (stream-add-zero dan-then-dog) 2)
+        (list (cons 0 "dan.jpg") (cons 0 "dog.jpg")) "test")
+    ]
+    [test-case ""
+      (check-equal?
+        (stream-for-n-steps (streamify '(1 2)) 4)
+        (list 1 2 1 2))]
+    [test-case ""
+      (check-equal?
+        (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3)
+        (list (cons 1 "a") (cons 2 "b") (cons 3 "a")))
+      (check-equal?
+        (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" )) 3)
+        (list (cons 1 "a") (cons 2 "a") (cons 3 "a")))
+    ] 
+    [test-case ""
+      (check-equal?
+        (vector-assoc
+          4 (vector (cons 2 1) (cons 3 1) (cons 4 1) (cons 5 1)))
+        (cons 4 1))
+      (check-equal?
+        (vector-assoc
+          4 (vector (cons 2 1)))
+        #f)
+      (check-equal?
+        (vector-assoc
+          4 (vector 4 (cons 4 1)))
+        (cons 4 1))
+    ]
+    [test-case ""
+      (let ([f (cached-assoc (list (cons 1 2) (cons 3 4)) 3)])
+      (check-equal? 
+        (f 3) 
+        (cons 3 4))
+      (check-equal? 
+        (f 3) 
+        (cons 3 4))
+      (check-equal? 
+        (f 1) 
+        (cons 1 2))
+      (check-equal? 
+        (f 5) 
+        #f)
+    )]
+    [test-case ""
+      (check-equal?
+        (while-less 7 do (begin (set! a (+ a 1)) (print "a") a))
+        #t "while-less test")
+      (check-equal?
+        (while-less 7 do (begin (set! a (+ a 1)) (print "a") a))
+        #t "while-less test")
+    ]
 ;   
 ;   ))
 ))

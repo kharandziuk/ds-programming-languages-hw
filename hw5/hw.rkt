@@ -39,4 +39,66 @@
            [dog (lambda () (cons "dog.jpg" dan))])
     dan))
 
+(define (stream-add-zero stream)
+  (let ([next (stream)])
+    (lambda () 
+      (cons (cons 0 (car next)) (stream-add-zero (cdr next))))))
 
+(define (streamify full-xs)
+  ; streamify list: '(1 2) -> (1 2 1 2 ..)
+  ; don't work for empty lists
+  (letrec ([aux (lambda (xs)
+                  (cons (car xs) 
+                        (lambda () (let ([cdr-xs (cdr xs)])
+                                     (if (null? cdr-xs)
+                                       (aux full-xs)
+                                       (aux cdr-xs))
+                                   ))))])
+    (lambda () (aux full-xs))))
+
+(define (cycle-lists xs ys)
+  (letrec ([x-stream (streamify xs)]
+           [y-stream (streamify ys)]
+           [aux (lambda (l-stream r-stream)
+            (let ([r-next (l-stream)]
+                  [l-next (r-stream)])
+            (cons 
+              (cons (car r-next) (car l-next))
+              (lambda () (aux (cdr r-next) (cdr l-next)))
+              )))])
+    (lambda () (aux x-stream y-stream))))
+
+(define (vector-assoc v vec)
+  (letrec ([len (vector-length vec)]
+           [aux (lambda (n) (if (>= n len)
+                    #f
+                    (let ([cur (vector-ref vec n)])
+                      (if (and (pair? cur) (equal? (car cur) v))
+                        cur
+                        (aux (+ 1 n))))
+                    ))])
+    (aux 0)))
+
+(define (cached-assoc xs size)
+  (letrec ([memo (make-vector size #f)]
+           [pos 0]
+           [f-set (lambda (x)
+                    (begin
+                           (vector-set! memo pos x)
+                           (set! pos (if (= pos size) 0 (+ pos 1)))
+                           x))]
+           [aux (lambda (x)
+                  (let ([ans (vector-assoc x memo)])
+                    (if ans
+                      ans
+                      (let ([ans (assoc x xs)])
+                        (if ans (f-set ans) #f)))))])
+    aux))
+
+(define-syntax while-less
+  (syntax-rules (do)
+    [(while-less edge do body)
+      (let ([t-edge edge])
+        (letrec ([aux (lambda () (if (>= body t-edge) #t (aux)))])
+          (aux)))]
+  ))
